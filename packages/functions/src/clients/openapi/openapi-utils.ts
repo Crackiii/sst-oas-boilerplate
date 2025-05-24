@@ -1,6 +1,5 @@
-import path from 'path'
-
 import { Context } from 'openapi-backend'
+import path from 'path'
 
 import { AUTH_NAME, HandlerParams } from './openapi-backend'
 
@@ -48,8 +47,8 @@ export const getCacheControl = (c: Context) => {
   return {
     revalidate: Boolean(
       pragma === 'no-cache' ||
-      cacheControl === 'no-cache' ||
-      cacheControl?.startsWith?.('max-age=')
+        cacheControl === 'no-cache' ||
+        cacheControl?.startsWith?.('max-age=')
     ),
     cacheControl
   }

@@ -1,5 +1,5 @@
 import * as Lambda from 'aws-lambda'
-import { OpenAPIBackend, Context, Document } from 'openapi-backend'
+import { Context, Document, OpenAPIBackend } from 'openapi-backend'
 
 import * as defaultHandlers from './openapi-default-handlers'
 import { authSecurityHandler } from './openapi-security-handlers'

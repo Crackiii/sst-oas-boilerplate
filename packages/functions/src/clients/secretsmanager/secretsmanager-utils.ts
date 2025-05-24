@@ -6,7 +6,7 @@ export const getSecretValue = (() => {
   const cache = new Map()
 
   return async (secretId: string) => {
-    const cached = cache.get(secretId)
+    const cached = cache.get(secretId) as string | undefined
 
     if (cached) return cached
 

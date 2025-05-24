@@ -4,7 +4,6 @@ import createHttpError from 'http-errors'
 import config from '../../config'
 import { replyJSON } from '../lambda/lambda-utils'
 import { logger } from '../lambda/powertools'
-
 import { ApiHandler } from './openapi-backend'
 
 export const notFound: ApiHandler = async () => {

@@ -1,3 +1,3 @@
-import definition from "./openapi.json";
+import definition from './openapi.json'
 
-export { definition };
+export { definition }

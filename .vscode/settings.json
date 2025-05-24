@@ -1,0 +1,14 @@
+// .vscode/settings.json  (per-project)
+{
+  // should be true to let any formatter run
+  "editor.formatOnSave": true,
+
+  // ESLint’s auto-fix hook
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit",
+    "source.fixAll.eslint": "explicit"
+  },
+
+  // VS Code needs to know which languages ESLint handles
+  "eslint.validate": ["javascript", "typescript", "typescriptreact"]
+}

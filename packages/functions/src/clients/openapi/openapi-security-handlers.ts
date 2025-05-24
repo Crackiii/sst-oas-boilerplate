@@ -1,7 +1,6 @@
+import type * as Lambda from 'aws-lambda'
 import { APIGatewayProxyEventV2 } from 'aws-lambda'
 import createHttpError from 'http-errors'
-import type * as Lambda from 'aws-lambda'
-
 import jwt from 'jsonwebtoken'
 import { Context, Handler } from 'openapi-backend'
 
@@ -65,11 +64,11 @@ export const authSecurityHandler: Handler = (
   // add claims from passed authorizer context
   const authorizerContext = (
     event?.requestContext as Lambda.APIGatewayEventRequestContextV2WithAuthorizer<AuthorizerContextV2>
-  )?.authorizer as AuthorizerContextV2
+  )?.authorizer
   const claims = { ...authorizerContext?.lambda }
 
   // add token from header
-  const token = getBearerToken(c)
+  const token = getBearerToken(c) as string
 
   if (token) {
     // add claims from token
@@ -118,6 +117,7 @@ const parseBearerToken = (bearerToken: string): IdTokenClaims => {
 
     return token
   } catch (err) {
+    console.error(err)
     throw new createHttpError[401]('Bad Authorization header')
   }
 }
