@@ -5,11 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "sst dev",
-    "build": "sst build",
-    "deploy": "sst deploy",
-    "remove": "sst remove",
-    "console": "sst console",
-    "typecheck": "tsc --noEmit",
+    "dev:swagger": "pnpm -r --filter ./packages/core --if-present run dev",
+    "build:types": "pnpm -r --filter ./packages/core --if-present run build",
     "start:dev": "sst dev --stage dev",
     "start:stag": "sst dev --stage stag",
     "start:prod": "sst dev --stage prod",

@@ -4,16 +4,16 @@
   "type": "module",
   "main": "src/index.ts",
   "scripts": {
-    "test": "sst bind vitest",
-    "typecheck": "tsc -noEmit",
+    "typecheck": "tsc --noEmit",
     "dev": "openapi swagger-ui openapi.yml -p 3001 --no-withcredentials",
     "openapi": "openapi read --json ./openapi.yml | sed 's/\\x1b\\[[0-9;]*m//g' > ./src/openapi.json",
-    "typegen": "echo '/* eslint-disable */\n/**\n * DO NOT MODIFY - GENERATED TYPES FROM OPENAPI\n **/' > ../functions/src/types/openapi.d.ts && typegen ./openapi.yml >> ../functions/src/types/openapi.d.ts",
-    "build": "npm run openapi && npm run typegen"
+    "typegen": "echo \"/* eslint-disable */\\n/**\\n * DO NOT MODIFY - GENERATED TYPES FROM OPENAPI\\n **/\" > ../functions/src/types/openapi.d.ts && pnpm exec typegen ./openapi.yml >> ../functions/src/types/openapi.d.ts",
+    "build": "pnpm run openapi && pnpm run typegen"
   },
   "devDependencies": {
     "@types/node": "^22.15.18",
-    "openapicmd": "^2.6.2"
+    "openapicmd": "^2.6.2",
+    "@sst/openapi": "^x.y.z"
   },
   "dependencies": {}
 }
