@@ -12,8 +12,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.15.18",
-    "openapicmd": "^2.6.2",
-    "@sst/openapi": "^x.y.z"
+    "openapicmd": "^2.6.2"
   },
   "dependencies": {}
 }

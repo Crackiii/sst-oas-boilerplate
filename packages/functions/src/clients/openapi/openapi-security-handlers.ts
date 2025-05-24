@@ -88,7 +88,6 @@ export const authSecurityHandler: Handler = (
     throw new createHttpError[401]('Unauthorized')
   }
 
-  // this value gets added to c.security["StickyAuth"]
   return {
     token,
     claims,
