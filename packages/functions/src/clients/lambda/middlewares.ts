@@ -5,9 +5,19 @@ import * as Lambda from 'aws-lambda'
 const CORRELATION_HEADERS =
   'awsRequestId, x-correlation-id, call-chain-length, debug-log-enabled'
 
+/**
+ * Middleware to add CORS support to AWS Lambda handlers using Middy.
+ *
+ * @returns A middleware object with before and after hooks to handle CORS preflight and response headers.
+ */
 export const withCors = () => {
   return {
-    // preflight requests (OPTIONS) can be early returned before reaching the lambda main handler
+    /**
+     * Handles CORS preflight (OPTIONS) requests by returning the appropriate headers early.
+     *
+     * @param handler - The Middy request object containing the AWS Lambda event.
+     * @returns A response object with CORS headers if the request is an OPTIONS preflight, otherwise undefined.
+     */
     before: (handler: middy.Request) => {
       const lambdaEvent = handler.event as Lambda.APIGatewayProxyEventV2
 
@@ -31,7 +41,11 @@ export const withCors = () => {
       }
     },
 
-    // We still have to return CORS headers for all requests
+    /**
+     * Injects CORS headers into the response for non-preflight requests.
+     *
+     * @param handler - The Middy request object containing the AWS Lambda event and response.
+     */
     after: (handler: middy.Request) => {
       const lambdaEvent = handler.event as Lambda.APIGatewayProxyEventV2
       const response =

@@ -5,14 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "sst dev",
-    "dev:swagger": "pnpm -r --filter ./packages/core --if-present run dev",
+    "start:swagger": "pnpm -r --filter ./packages/core --if-present run dev",
     "build:types": "pnpm -r --filter ./packages/core --if-present run build",
     "start:dev": "sst dev --stage dev",
     "start:stag": "sst dev --stage stag",
     "start:prod": "sst dev --stage prod",
-    "dev:deploy": "sst deploy --stage dev",
-    "stag:deploy": "sst deploy --stage stag",
-    "prod:deploy": "sst deploy --stage prod"
+    "deploy:dev": "sst deploy --stage dev",
+    "deploy:tag": "sst deploy --stage stag",
+    "deploy:rod": "sst deploy --stage prod"
   },
   "devDependencies": {
     "@eslint/js": "^9.27.0",

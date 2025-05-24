@@ -12,74 +12,71 @@ export interface AuthorizerResultContext {
   [claim: string]: string | number | boolean
 }
 
-export declare type AuthorizerContextV2 = {
+export type AuthorizerContextV2 = {
   lambda: AuthorizerResultContext
 } & APIGatewayProxyEventV2['requestContext']
 
 export interface JWTToken {
-  /**
-   * Issuer of token (URL)
-   */
+  /** Issuer of token (URL) */
   iss: string
-  /**
-   * Issued at time (UNIX Timestamp)
-   */
+  /** Issued at time (UNIX Timestamp) */
   iat: number
-  /**
-   * Expiry time (UNIX Timestamp)
-   */
+  /** Expiry time (UNIX Timestamp) */
   exp: number
-  /**
-   * Token type (access / id / refresh)
-   */
+  /** Token type (access / id / refresh) */
   token_use: 'access' | 'id' | 'refresh'
 }
+
 export interface IdTokenClaims extends JWTToken {
-  /**
-   * Cognito username
-   */
+  /** Cognito username */
   ['cognito:username']: string
 }
+
 export interface AccessTokenClaims extends JWTToken {
-  /**
-   * Cognito username
-   */
+  /** Cognito groups */
   ['cognito:groups']: string[]
-  /**
-   * User pool client id
-   */
+  /** User pool client id */
   ['client_id']: string
 }
 
 export interface SecurityContext {
-  userId?: string
+  /** The raw JWT bearer token */
   token?: string
+  /** Aggregated claims from authorizer and token */
+  claims: AuthorizerResultContext & Partial<IdTokenClaims>
+  /** User identifier */
+  userId?: string
+  /** User email or username */
   email?: string
-  claims: AuthorizerResultContext
 }
+
+/**
+ * OpenAPI security handler that extracts authentication information
+ * from either a Lambda authorizer context or a Bearer token.
+ *
+ * @param c - The OpenAPI Backend execution context.
+ * @param event - The API Gateway V2 event which may include authorizer data.
+ * @returns A SecurityContext with token, aggregated claims, userId, and email.
+ * @throws HttpError(401) if neither authorizer context nor token is present.
+ */
 export const authSecurityHandler: Handler = (
   c: Context,
   event?: Lambda.APIGatewayProxyEventV2
 ): SecurityContext => {
-  // add claims from passed authorizer context
   const authorizerContext = (
     event?.requestContext as Lambda.APIGatewayEventRequestContextV2WithAuthorizer<AuthorizerContextV2>
   )?.authorizer
-  const claims = { ...authorizerContext?.lambda }
 
-  // add token from header
-  const token = getBearerToken(c) as string
+  const claims = { ...authorizerContext?.lambda }
+  const token = getBearerToken(c)
 
   if (token) {
-    // add claims from token
     const tokenClaims = parseBearerToken(token)
 
     Object.assign(
       claims,
-      {
-        ...tokenClaims,
-        userId: claims['custom:userId']
-      },
+      tokenClaims,
+      { userId: claims['custom:userId'] },
       authorizerContext?.lambda
     )
   }
@@ -96,23 +93,32 @@ export const authSecurityHandler: Handler = (
   }
 }
 
-export const getBearerToken = (c: Context) => {
+/**
+ * Extracts the Bearer token from the Authorization header of an OpenAPI request.
+ *
+ * @param c - The OpenAPI Backend execution context.
+ * @returns The Bearer token string if present, otherwise undefined.
+ */
+export const getBearerToken = (c: Context): string | undefined => {
   const authHeader =
     c.request.headers['authorization'] || c.request.headers['Authorization']
-  const authHeaderString = Array.isArray(authHeader)
-    ? authHeader[0]
-    : authHeader
+  const headerValue = Array.isArray(authHeader) ? authHeader[0] : authHeader
 
-  return authHeaderString?.replace('Bearer ', '')
+  return headerValue?.replace('Bearer ', '')
 }
 
+/**
+ * Decodes a JWT Bearer token and returns the ID token claims.
+ *
+ * @param bearerToken - The raw JWT Bearer token string.
+ * @returns The decoded ID token claims.
+ * @throws HttpError(401) if the token cannot be decoded or is invalid.
+ */
 const parseBearerToken = (bearerToken: string): IdTokenClaims => {
   try {
     const token = jwt.decode(bearerToken) as IdTokenClaims
 
-    if (!token) {
-      throw new Error('Unable to decode token')
-    }
+    if (!token) throw new Error('Unable to decode token')
 
     return token
   } catch (err) {

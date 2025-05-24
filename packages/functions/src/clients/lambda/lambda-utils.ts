@@ -4,7 +4,11 @@ import { isHttpError } from 'http-errors'
 import { logger } from './powertools'
 
 /**
- * Utility to create JSON result object with defaults
+ * Constructs a standardized API Gateway JSON response.
+ *
+ * @param json - The response payload to serialize as JSON.
+ * @param opts - Optional override settings for the response, such as statusCode or headers.
+ * @returns An APIGatewayProxyStructuredResultV2 with default headers, status code, and serialized body.
  */
 export function replyJSON(
   json: unknown,
@@ -29,17 +33,23 @@ export function replyJSON(
 }
 
 /**
- * Convert error into JSON response
+ * Converts thrown errors into JSON API Gateway responses.
+ *
+ * Renders HTTPError instances as their statusCode and message,
+ * and logs other errors before returning a generic 500 response.
+ *
+ * @param err - The error thrown during request handling.
+ * @returns An APIGatewayProxyStructuredResultV2 representing the error response.
  */
-export const handleErrors = (err: Error) => {
+export const handleErrors = (
+  err: Error
+): Lambda.APIGatewayProxyStructuredResultV2 => {
   if (isHttpError(err)) {
-    // render http errors thrown by handler as JSON
     const { statusCode, message } = err
 
     return replyJSON({ status: statusCode, error: message }, { statusCode })
   } else {
-    // log non-http errors thrown by handlers and return an opaque 500
-    logger.error('Error', { error: err })
+    logger.error('Unhandled error in handler', { error: err })
 
     return replyJSON(
       { status: 500, error: 'Unknown API error' },
