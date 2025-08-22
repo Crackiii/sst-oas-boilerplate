@@ -16,7 +16,7 @@
     "@dazn/lambda-powertools-dynamodb-client": "^1.28.1",
 
     "yn": "^5.0.0",
-    "@middy/core": "^6.3.0",
+    "@middy/core": "^6.4.3",
     "http-errors": "^2.0.0",
     "jsonwebtoken": "^9.0.2",
     "openapi-backend": "^5.12.0"
